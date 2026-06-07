@@ -1,8 +1,6 @@
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import HuggingFaceEmbeddings
 import pdfplumber
 import os
 
@@ -23,11 +21,6 @@ def parse_resume(pdf_path: str) -> dict:
         chunk_overlap=50
     )
     chunks = splitter.split_text(raw_text)
-    
-    embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2"
-    )
-    vector_store = FAISS.from_texts(chunks, embeddings)
     
     llm = ChatGroq(
         model="llama-3.3-70b-versatile",
@@ -53,7 +46,7 @@ def parse_resume(pdf_path: str) -> dict:
     return {
         "raw_text": raw_text,
         "chunks": chunks,
-        "vector_store": vector_store,
+        "vector_store": None,
         "parsed_output": response.content
     }
 
